@@ -52,25 +52,25 @@ enum macro_keycodes {
 #define KC_SE_LPRN S(KC_8)           // (
 #define KC_SE_RPRN S(KC_9)           // )
 #define KC_SE_EQAL S(KC_0)           // =
-#define KC_SE_CIRC S(KC_RBRC)    // ^
+#define KC_SE_CIRC S(KC_RBRC)        // ^
 #define KC_SE_AT RALT(KC_2)          // @
 #define KC_SE_DLR RALT(KC_4)         // $
-#define KC_SE_LCBR RALT(KC_7)        // {
+#define KC_SE_LCBR S(RALT(KC_8))     // {
 #define KC_SE_LBRC RALT(KC_8)        // [
 #define KC_SE_RBRC RALT(KC_9)        // ]
-#define KC_SE_RCBR RALT(KC_0)        // }
-#define KC_SE_TILD RALT(KC_RBRC) // ~
-#define KC_SE_DIAE KC_RBRC       // ¨
+#define KC_SE_RCBR S(RALT(KC_9))     // }
+#define KC_SE_TILD RALT(KC_RBRC)     // ~
+#define KC_SE_DIAE KC_RBRC           // ¨
 #define KC_SE_ACUT KC_EQL            // ´
 #define KC_SE_MINS KC_SLASH          // -
 #define KC_SE_GRAV KC_PLUS           // `
-#define KC_SE_LESS KC_NUBS           // <
-#define KC_SE_MORE S(KC_NUBS)        // >
+#define KC_SE_LESS KC_GRV      // <
+#define KC_SE_MORE S(KC_GRV)         // >
 #define KC_SE_PLUS KC_MINS           // +
 #define KC_SE_ASTR S(KC_BSLS)        // *
 #define KC_SE_QUES S(KC_MINS)        // ?
-#define KC_SE_BSLH RALT(KC_MINS)     /* \ */
-#define KC_SE_PIPE RALT(KC_NUBS)     // |
+#define KC_SE_BSLH S(RALT(KC_7))     /* \ */
+#define KC_SE_PIPE RALT(KC_7)        // |
 
 // Tap dance for SHIFT -> TAB
 #define TD_CTL_TAB 0
@@ -87,9 +87,9 @@ combo_t key_combos[] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Default layer
     [_SVORAK] = LAYOUT_split_3x6_3( \
-      KC_ESC,     KC_SE_AA, KC_SE_AE, KC_SE_OE, KC_P, KC_Y,  /* | */  KC_F, KC_G, KC_C, KC_R, KC_L, KC_COMM, \
+      KC_ESC,          KC_SE_AA, KC_SE_AE, KC_SE_OE, KC_P, KC_Y,  /* | */  KC_F, KC_G, KC_C, KC_R, KC_L, KC_COMM, \
       TD (TD_CTL_TAB), KC_A,     KC_O,     KC_E,     KC_U, KC_I,  /* | */  KC_D, KC_H, KC_T, KC_N, KC_S, KC_SE_MINS,\
-      KC_RSFT,     KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /* | */  KC_B, KC_M, KC_W, KC_V, KC_Z, KC_LALT, \
+      KC_RSFT,         KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /* | */  KC_B, KC_M, KC_W, KC_V, KC_Z, KC_LALT, \
 
                                     KC_LGUI, KC_BSPC, MO(_FNUM), /* | */  KC_ENT, KC_SPC,  MO(_SYMBOLS) \
     ),
