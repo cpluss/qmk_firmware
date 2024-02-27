@@ -5,3 +5,4 @@ TAP_DANCE_ENABLE = yes
 # In order to combo transition to gaming layer
 COMBO_ENABLE = yes
 OLED_ENABLE = yes
+MOUSEKEY_ENABLE = yes

@@ -101,9 +101,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                    KC_NO, KC_NO, KC_NO,  /* | */  KC_NO, KC_NO, KC_TRNS \
     ),
     [_FNUM] = LAYOUT_split_3x6_3( \
-      KC_NO, KC_1,    KC_2,    KC_3,    KC_4,  KC_5,    /* | */ KC_6,    KC_7,    KC_8,  KC_9,    KC_0,     KC_NO, \
-      KC_NO, KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, KC_NO, /* | */ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, KC_NO, \
-      KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO, KC_NO,   /* | */ KC_MPLY, KC_MNXT, KC_NO, KC_NO,   KC_NO,    KC_NO, \
+      KC_NO, KC_1,    KC_2,    KC_3,    KC_4,  KC_5,              /* | */ KC_6,    KC_7,    KC_8,  KC_9,    KC_0,     KC_NO, \
+      KC_NO, KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, KC_NO,           /* | */ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, KC_NO, \
+      KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_MS_BTN1, KC_MS_BTN2,   /* | */ KC_MPLY, KC_MNXT, KC_NO, KC_NO,   KC_NO,    KC_NO, \
 
                        KC_NO, KC_NO, KC_TRNS, /* | */   KC_COPY, KC_PSTE, KC_0 \
     ),
