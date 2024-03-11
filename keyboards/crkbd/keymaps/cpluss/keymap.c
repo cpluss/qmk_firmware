@@ -79,7 +79,7 @@ tap_dance_action_t tap_dance_actions[] = {
     [TD_CTL_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_LCTL, KC_TAB)
 };
 
-const uint16_t PROGMEM combo_gaming[] = {KC_RSFT, KC_SE_MINS, COMBO_END};
+const uint16_t PROGMEM combo_gaming[] = {KC_RSFT, KC_ESC, KC_SE_MINS, COMBO_END};
 combo_t key_combos[] = {
     COMBO(combo_gaming, TG(_GAMING))
 };
