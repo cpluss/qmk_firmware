@@ -98,14 +98,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_NO, KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, KC_SE_PIPE,  /*|*/   KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, KC_NO, \
       KC_NO, KC_SE_COL,  KC_SE_EQAL, KC_SE_AT,   KC_SE_EXCL, KC_SE_BSLH,  /*|*/   KC_SE_PERC, KC_SE_ACUT, KC_SE_QUO,  KC_SE_ASTR, KC_SE_GRAV, KC_NO, \
 
-                                                   KC_NO, KC_NO, KC_NO,  /* | */  KC_NO, KC_NO, KC_TRNS \
+                                                   KC_NO, KC_DEL, KC_NO,  /* | */  KC_NO, KC_NO, KC_TRNS \
     ),
     [_FNUM] = LAYOUT_split_3x6_3( \
       KC_NO, KC_1,    KC_2,    KC_3,    KC_4,  KC_5,              /* | */ KC_6,    KC_7,    KC_8,  KC_9,    KC_0,     KC_NO, \
-      KC_NO, KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, KC_NO,           /* | */ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, KC_NO, \
+      KC_NO, KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, KC_MS_BTN3,           /* | */ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT, KC_NO, \
       KC_NO, KC_NO,   KC_MS_WH_UP,   KC_MS_WH_DOWN,   KC_MS_BTN2, KC_MS_BTN1,   /* | */ KC_NO, KC_MS_WH_LEFT, KC_MS_WH_UP, KC_MS_WH_DOWN, KC_MS_WH_RIGHT,   KC_NO, \
 
-                       KC_NO, KC_NO, KC_TRNS, /* | */   KC_COPY, KC_PSTE, KC_0 \
+                       KC_NO, KC_NO, KC_TRNS, /* | */   KC_COPY, KC_TAB, KC_0 \
     ),
     [_GAMING] = LAYOUT_split_3x6_3( \
       KC_ESC,  KC_Q, KC_W, KC_E, KC_R, KC_T,  /* | */  KC_Y, KC_U, KC_I,  KC_O,  KC_P,  KC_BSPC, \
