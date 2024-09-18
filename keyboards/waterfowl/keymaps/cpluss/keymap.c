@@ -54,30 +54,85 @@ enum layer_names {
     _FNUM,
 };
 
+num keycodes {
+    // Custom oneshot mod implementation with no timers.
+    OS_SHFT = SAFE_RANGE,
+    OS_CTRL,
+    OS_ALT,
+    OS_CMD,
+
+    SW_WIN,  // Switch to next window         (cmd-tab)
+    SW_LANG, // Switch to next input language (ctl-spc)
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Default layer
     [_SVORAK] = LAYOUT( \
       KC_SE_AA, KC_SE_AE, KC_SE_OE, KC_P, KC_Y,  /*|*/  KC_F, KC_G, KC_C, KC_R, KC_L, \
-      LGUI_T(KC_A), LALT_T(KC_O), LSFT_T(KC_E), LCTL_T(KC_U), KC_I,  /*|*/  KC_D, RCTL_T(KC_H), RSFT_T(KC_T), LALT_T(KC_N), RGUI_T(KC_S), \
+      KC_A,     KC_O,     KC_E,     KC_U, KC_I,  /*|*/  KC_D, KC_H, KC_T, KC_N, KC_S, \
       KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /*|*/  KC_B, KC_M, KC_W, KC_V, KC_Z, \
       /*R*/                               /*R*/        /*R*/                                 /*R*/
-      KC_NO, LSFT_T(KC_ESC), KC_BSPC, LT(_FNUM, KC_COMM), KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, MO(_SYMBOLS), KC_NO \
+      KC_NO, KC_ESC, KC_LSFT, MO(_FNUM), KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, MO(_SYMBOLS), KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
-      KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_NO,      KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
+      KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
       KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, KC_SE_PIPE, /*|*/ KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, \
       KC_SE_COL,  KC_SE_EQAL, KC_SE_AT,   KC_SE_EXCL, KC_SE_BSLH, /*|*/ KC_SE_PERC, KC_SE_ACUT, KC_SE_QUO,  KC_SE_ASTR, KC_SE_USC, \
       /*R*/                                    /*R*/        /*R*/                         /*R*/
       KC_NO, KC_SE_USC, KC_SE_MINS, KC_SE_USC, KC_NO, /*|*/ KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO \
     ),
     [_FNUM] = LAYOUT( \
-      KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  /*|*/ KC_6,  KC_7,    KC_8,  KC_9,    KC_0, \
-      KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, M_MDL, /*|*/ KC_NO, KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
-      KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_NO, M_SWL,   M_SWU, M_SWD,   M_SWR,\
+      KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  /*|*/ KC_6,    KC_7,    KC_8,  KC_9,    KC_0, \
+      OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL, /*|*/ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
+      KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_BSPC, KC_DEL,  M_SWU, M_SWD,   M_SWR,\
       /*R*/                        /*R*/        /*R*/                         /*R*/
       KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
     ),
 };
+
+/*bool is_oneshot_cancel_key(uint16_t keycode) {
+    switch (keycode) {
+    case LA_SYM:
+    case LA_NAV:
+        return true;
+    default:
+        return false;
+    }
+}*/
+
+bool is_oneshot_ignored_key(uint16_t keycode) {
+    switch (keycode) {
+    case KC_LSFT:
+    case OS_SHFT:
+    case OS_CTRL:
+    case OS_ALT:
+    case OS_CMD:
+        return true;
+    default:
+        return false;
+    }
+}å
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    update_oneshot(
+        &os_shft_state, KC_LSFT, OS_SHFT,
+        keycode, record
+    );
+    update_oneshot(
+        &os_ctrl_state, KC_LCTL, OS_CTRL,
+        keycode, record
+    );
+    update_oneshot(
+        &os_alt_state, KC_LALT, OS_ALT,
+        keycode, record
+    );
+    update_oneshot(
+        &os_cmd_state, KC_LCMD, OS_CMD,
+        keycode, record
+    );
+
+    return true;å
+}
 
 #ifdef OLED_ENABLE
 
@@ -140,9 +195,9 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         }
     } else if (index == 3) { // Right encoder
         if (clockwise) {
-            tap_code(KC_MNXT);
-        } else {
             tap_code(KC_MPRV);
+        } else {
+            tap_code(KC_MNXT);
         }
     }
 
