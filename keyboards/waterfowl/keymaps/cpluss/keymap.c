@@ -54,6 +54,9 @@ enum layer_names {
     _FNUM,
 };
 
+#define LA_FNUM MO(_FNUM)
+#define LA_SYM MO(_SYMBOLS)
+
 num keycodes {
     // Custom oneshot mod implementation with no timers.
     OS_SHFT = SAFE_RANGE,
@@ -72,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_A,     KC_O,     KC_E,     KC_U, KC_I,  /*|*/  KC_D, KC_H, KC_T, KC_N, KC_S, \
       KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /*|*/  KC_B, KC_M, KC_W, KC_V, KC_Z, \
       /*R*/                               /*R*/        /*R*/                                 /*R*/
-      KC_NO, KC_ESC, KC_LSFT, MO(_FNUM), KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, MO(_SYMBOLS), KC_NO \
+      KC_NO, KC_ESC, KC_LSFT, LA_FNUM, KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, LA_SYM, KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
       KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
@@ -83,25 +86,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_FNUM] = LAYOUT( \
       KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  /*|*/ KC_6,    KC_7,    KC_8,  KC_9,    KC_0, \
-      OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL, /*|*/ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
+      OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL,   /*|*/ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
       KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_BSPC, KC_DEL,  M_SWU, M_SWD,   M_SWR,\
       /*R*/                        /*R*/        /*R*/                         /*R*/
       KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
     ),
 };
 
-/*bool is_oneshot_cancel_key(uint16_t keycode) {
+bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
     case LA_SYM:
-    case LA_NAV:
+    case LA_FNUM:
         return true;
     default:
         return false;
     }
-}*/
+}
+
+oneshot_state os_shft_state = os_up_unqueued;
+oneshot_state os_ctrl_state = os_up_unqueued;
+oneshot_state os_alt_state = os_up_unqueued;
+oneshot_state os_cmd_state = os_up_unqueued;
 
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
+    case LA_SYM:
+    case LA_FNUM:
     case KC_LSFT:
     case OS_SHFT:
     case OS_CTRL:
@@ -111,7 +121,7 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     default:
         return false;
     }
-}å
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     update_oneshot(
