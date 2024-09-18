@@ -61,10 +61,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       LGUI_T(KC_A), LALT_T(KC_O), LSFT_T(KC_E), LCTL_T(KC_U), KC_I,  /*|*/  KC_D, RCTL_T(KC_H), RSFT_T(KC_T), LALT_T(KC_N), RGUI_T(KC_S), \
       KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /*|*/  KC_B, KC_M, KC_W, KC_V, KC_Z, \
       /*R*/                               /*R*/        /*R*/                                 /*R*/
-      KC_NO, LSFT_T(KC_ESC), KC_BSPC, LT(_FNUM, KC_COMM), KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, MO(_SYMBOLS), KC_NO \
+      KC_NO, KC_ESC, KC_RSFT, LT(_FNUM, KC_COMM), KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, MO(_SYMBOLS), KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
-      KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_NO,      KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
+      KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
       KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, KC_SE_PIPE, /*|*/ KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, \
       KC_SE_COL,  KC_SE_EQAL, KC_SE_AT,   KC_SE_EXCL, KC_SE_BSLH, /*|*/ KC_SE_PERC, KC_SE_ACUT, KC_SE_QUO,  KC_SE_ASTR, KC_SE_USC, \
       /*R*/                                    /*R*/        /*R*/                         /*R*/
@@ -72,8 +72,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_FNUM] = LAYOUT( \
       KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  /*|*/ KC_6,  KC_7,    KC_8,  KC_9,    KC_0, \
-      KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, M_MDL, /*|*/ KC_NO, KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
-      KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_NO, M_SWL,   M_SWU, M_SWD,   M_SWR,\
+      KC_VOLD, KC_VOLU, KC_MPLY, KC_MNXT, M_MDL, /*|*/ KC_DEL, KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
+      KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_BSPC, M_SWL,   M_SWU, M_SWD,   M_SWR,\
       /*R*/                        /*R*/        /*R*/                         /*R*/
       KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
     ),
