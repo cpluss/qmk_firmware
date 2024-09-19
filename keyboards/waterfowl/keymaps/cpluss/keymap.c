@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
 
+#include "oneshot.h"
+
 // SWEDISH LETTERS AND SYMBOLS
 // Letters
 #define KC_SE_AA KC_LBRC             // Å
@@ -57,7 +59,9 @@ enum layer_names {
 #define LA_FNUM MO(_FNUM)
 #define LA_SYM MO(_SYMBOLS)
 
-num keycodes {
+
+
+enum keycodes {
     // Custom oneshot mod implementation with no timers.
     OS_SHFT = SAFE_RANGE,
     OS_CTRL,
@@ -75,7 +79,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_A,     KC_O,     KC_E,     KC_U, KC_I,  /*|*/  KC_D, KC_H, KC_T, KC_N, KC_S, \
       KC_DOT,   KC_Q,     KC_J,     KC_K, KC_X,  /*|*/  KC_B, KC_M, KC_W, KC_V, KC_Z, \
       /*R*/                               /*R*/        /*R*/                                 /*R*/
-      KC_NO, KC_ESC, KC_LSFT, LA_FNUM, KC_NO, /*|*/  KC_NO, KC_ENT, KC_SPC, LA_SYM, KC_NO \
+      KC_NO, KC_ESC, KC_LSFT, LA_FNUM, KC_MPLY, /*|*/  KC_MPLY, KC_ENT, KC_SPC, LA_SYM, KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
       KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
@@ -86,7 +90,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_FNUM] = LAYOUT( \
       KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  /*|*/ KC_6,    KC_7,    KC_8,  KC_9,    KC_0, \
-      OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL,   /*|*/ KC_NO,   KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
+      OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL,   /*|*/ KC_DEL,  KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
       KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_BSPC, KC_DEL,  M_SWU, M_SWD,   M_SWR,\
       /*R*/                        /*R*/        /*R*/                         /*R*/
       KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
@@ -141,7 +145,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         keycode, record
     );
 
-    return true;å
+    return true;
 }
 
 #ifdef OLED_ENABLE
@@ -175,6 +179,12 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oled_render_layer_state();
+
+        oled_write_ln_P(PSTR(""), false);
+        oled_write_ln_P(os_shft_state == os_up_queued ? PSTR("SHFT") : PSTR(""), false);
+        oled_write_ln_P(os_ctrl_state == os_up_queued ? PSTR("CTRL") : PSTR(""), false);
+        oled_write_ln_P(os_alt_state == os_up_queued ? PSTR("ALT") : PSTR(""), false);
+        oled_write_ln_P(os_cmd_state == os_up_queued ? PSTR("CMD") : PSTR(""), false);
     } else {
         oled_render_layer_state();
     }
@@ -187,9 +197,9 @@ bool oled_task_user(void) {
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) { // Left roller
         if (clockwise) {
-            tap_code(KC_UP);
+            tap_code(KC_PGUP);
         } else {
-            tap_code(KC_DOWN);
+            tap_code(KC_PGDN);
         }
     } else if (index == 1) { // Left encoder
         if (clockwise) {
@@ -199,9 +209,9 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         }
     } else if (index == 2) { // Right roller
         if (clockwise) {
-            tap_code(KC_RIGHT);
+            tap_code(M_SWR);
         } else {
-            tap_code(KC_LEFT);
+            tap_code(M_SWL);
         }
     } else if (index == 3) { // Right encoder
         if (clockwise) {
