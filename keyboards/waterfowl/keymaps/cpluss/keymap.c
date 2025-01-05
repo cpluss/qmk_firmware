@@ -1,6 +1,8 @@
 #include QMK_KEYBOARD_H
 
 #include "oneshot.h"
+#include "os_specific.h"
+#include "keycodes.h"
 
 // SWEDISH LETTERS AND SYMBOLS
 // Letters
@@ -59,13 +61,7 @@ enum layer_names {
 #define LA_FNUM MO(_FNUM)
 #define LA_SYM MO(_SYMBOLS)
 
-// Support for different operating systems
-enum os_mode {
-    MAC_MODE,
-    WIN_MODE,
-};
-
-enum keycodes {
+enum custom_keycodes {
     // Custom oneshot mod implementation with no timers.
     OS_SHFT = SAFE_RANGE,
     OS_CTRL,
@@ -83,6 +79,16 @@ enum keycodes {
     SE_BSLH,  // "\"
     SE_LCBR,  // {
     SE_RCBR,  // }
+};
+
+// Define the OS-specific keycode mappings
+const os_keycode_map_t PROGMEM os_keycode_mappings[] = {
+    {SE_LESS, KC_GRV,       KC_NUBS},        // <
+    {SE_MORE, S(KC_GRV),    S(KC_NUBS)},     // >
+    {SE_PIPE, RALT(KC_7),   RALT(KC_NUBS)},  // |
+    {SE_BSLH, S(RALT(KC_7)), RALT(KC_MINS)}, // \ ""
+    {SE_LCBR, S(RALT(KC_8)), RALT(KC_7)},    // {
+    {SE_RCBR, S(RALT(KC_9)), RALT(KC_0)},    // }
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -140,85 +146,29 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     }
 }
 
-// Default to MAC on startup, as it's what I use the most.
-enum os_mode current_os = MAC_MODE;
-
-// Add this function to get the correct keycode based on OS
-uint16_t get_os_specific_keycode(uint16_t keycode) {
-    switch (keycode) {
-        case SE_LESS:
-            return current_os == MAC_MODE ? KC_GRV : KC_NUBS;
-        case SE_MORE:
-            return current_os == MAC_MODE ? S(KC_GRV) : S(KC_NUBS);
-        case SE_PIPE:
-            return current_os == MAC_MODE ? RALT(KC_7) : RALT(KC_NUBS);
-        case SE_BSLH:
-            return current_os == MAC_MODE ? S(RALT(KC_7)) : RALT(KC_MINS);
-        case SE_LCBR:
-            return current_os == MAC_MODE ? RALT(KC_8) : RALT(KC_7);
-        case SE_RCBR:
-            return current_os == MAC_MODE ? RALT(KC_9) : RALT(KC_0);
-        default:
-            return keycode;
-    }
-}
-
-void update_os_toggle(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == TOG_OS) {
-        if (record->event.pressed) {
-            // Simple toggle, once we get more operating systems (unlikely)
-            // we can add a more complex toggle system.
-            current_os = current_os == MAC_MODE ? WIN_MODE : MAC_MODE;
-            #ifdef OLED_ENABLE
-                // Force OLED refresh
-                oled_clear();
-            #endif
-        }
-    }
-}
-
-bool process_os_specific_keycode(uint16_t keycode, keyrecord_t *record) {
-    // Handle OS-specific keycodes
-    switch (keycode) {
-        case SE_LESS:
-        case SE_MORE:
-        case SE_PIPE:
-        case SE_BSLH:
-        case SE_LCBR:
-        case SE_RCBR:
-            if (record->event.pressed) {
-                uint16_t os_keycode = get_os_specific_keycode(keycode);
-                tap_code16(os_keycode);
-            }
-            return false;
-    }
-    return true;
+// In your keyboard_init_user or similar initialization function
+void keyboard_post_init_user(void) {
+    init_os_management(os_keycode_mappings, 
+                      sizeof(os_keycode_mappings) / sizeof(os_keycode_map_t));
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // Toggle the operating system in use
-    update_os_toggle(keycode, record);
-
-    update_oneshot(
-        &os_shft_state, KC_LSFT, OS_SHFT,
-        keycode, record
-    );
-    update_oneshot(
-        &os_ctrl_state, KC_LCTL, OS_CTRL,
-        keycode, record
-    );
-    update_oneshot(
-        &os_alt_state, KC_LALT, OS_ALT,
-        keycode, record
-    );
-    update_oneshot(
-        &os_cmd_state, KC_LCMD, OS_CMD,
-        keycode, record
-    );
+    if (keycode == TOG_OS && record->event.pressed) {
+        toggle_os();
+        #ifdef OLED_ENABLE
+            oled_clear();
+        #endif
+        return false;
+    }
 
     if (!process_os_specific_keycode(keycode, record)) {
         return false;
     }
+
+    update_oneshot(&os_shft_state, KC_LSFT, OS_SHFT, keycode, record);
+    update_oneshot(&os_ctrl_state, KC_LCTL, OS_CTRL, keycode, record);
+    update_oneshot(&os_alt_state, KC_LALT, OS_ALT, keycode, record);
+    update_oneshot(&os_cmd_state, KC_LCMD, OS_CMD, keycode, record);
 
     return true;
 }
@@ -226,8 +176,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef OLED_ENABLE
 
 void oled_render_layer_state(void) {
-    // Add OS mode indicator
-    oled_write_ln_P(current_os == MAC_MODE ? PSTR("MAC") : PSTR("WIN"), false);
+    oled_write_ln_P(PSTR(get_os_name()), false);
     oled_write_ln_P(PSTR("----------"), false);
 
     switch (get_highest_layer(layer_state)) {

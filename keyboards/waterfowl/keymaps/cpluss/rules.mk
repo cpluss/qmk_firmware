@@ -5,3 +5,4 @@ MOUSEKEY_ENABLE = yes
 ENCODER_ENABLE = yes
 
 SRC += oneshot.c
+SRC += os_specific.c
