@@ -59,7 +59,11 @@ enum layer_names {
 #define LA_FNUM MO(_FNUM)
 #define LA_SYM MO(_SYMBOLS)
 
-
+// Support for different operating systems
+enum os_mode {
+    MAC_MODE,
+    WIN_MODE,
+};
 
 enum keycodes {
     // Custom oneshot mod implementation with no timers.
@@ -70,6 +74,15 @@ enum keycodes {
 
     SW_WIN,  // Switch to next window         (cmd-tab)
     SW_LANG, // Switch to next input language (ctl-spc)
+
+    // Support switching between operating systems
+    TOG_OS,   // Toggle operating system
+    SE_LESS,  // <
+    SE_MORE,  // >
+    SE_PIPE,  // |
+    SE_BSLH,  // "\"
+    SE_LCBR,  // {
+    SE_RCBR,  // }
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -82,8 +95,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_NO, KC_ESC, KC_LSFT, LA_FNUM, KC_MPLY, /*|*/  KC_MPLY, KC_ENT, KC_SPC, LA_SYM, KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
-      KC_SE_LCBR, KC_SE_RCBR, KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
-      KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, KC_SE_PIPE, /*|*/ KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, \
+      SE_LCBR,    SE_RCBR,    KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, SE_LESS, SE_MORE, \
+      KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, SE_PIPE,    /*|*/ KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, \
       KC_SE_COL,  KC_SE_EQAL, KC_SE_AT,   KC_SE_EXCL, KC_SE_BSLH, /*|*/ KC_SE_PERC, KC_SE_GRAV, KC_SE_QUO,  KC_SE_ASTR, KC_SE_USC, \
       /*R*/                                    /*R*/        /*R*/                         /*R*/
       KC_NO, KC_SE_USC, KC_SE_MINS, KC_SE_USC, KC_NO, /*|*/ KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO \
@@ -93,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       OS_CMD, OS_ALT, OS_SHFT, OS_CTRL, M_MDL,   /*|*/ KC_DEL,  KC_LEFT, KC_UP, KC_DOWN, KC_RIGHT,\
       KC_NO,   M_SWU,   M_SWD,   M_RHT,   M_LFT, /*|*/ KC_BSPC, KC_DEL,  M_SWU, M_SWD,   M_SWR,\
       /*R*/                        /*R*/        /*R*/                         /*R*/
-      KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
+      KC_NO, TOG_OS, KC_NO, KC_TRNS, KC_NO, /*|*/ KC_NO, KC_COPY, KC_TAB, KC_0, KC_NO \
     ),
 };
 
@@ -127,7 +140,65 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     }
 }
 
+// Default to MAC on startup, as it's what I use the most.
+enum os_mode current_os = MAC_MODE;
+
+// Add this function to get the correct keycode based on OS
+uint16_t get_os_specific_keycode(uint16_t keycode) {
+    switch (keycode) {
+        case SE_LESS:
+            return current_os == MAC_MODE ? KC_GRV : KC_NUBS;
+        case SE_MORE:
+            return current_os == MAC_MODE ? S(KC_GRV) : S(KC_NUBS);
+        case SE_PIPE:
+            return current_os == MAC_MODE ? RALT(KC_7) : RALT(KC_NUBS);
+        case SE_BSLH:
+            return current_os == MAC_MODE ? S(RALT(KC_7)) : RALT(KC_MINS);
+        case SE_LCBR:
+            return current_os == MAC_MODE ? RALT(KC_8) : RALT(KC_7);
+        case SE_RCBR:
+            return current_os == MAC_MODE ? RALT(KC_9) : RALT(KC_0);
+        default:
+            return keycode;
+    }
+}
+
+void update_os_toggle(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == TOG_OS) {
+        if (record->event.pressed) {
+            // Simple toggle, once we get more operating systems (unlikely)
+            // we can add a more complex toggle system.
+            current_os = current_os == MAC_MODE ? WIN_MODE : MAC_MODE;
+            #ifdef OLED_ENABLE
+                // Force OLED refresh
+                oled_clear();
+            #endif
+        }
+    }
+}
+
+bool process_os_specific_keycode(uint16_t keycode, keyrecord_t *record) {
+    // Handle OS-specific keycodes
+    switch (keycode) {
+        case SE_LESS:
+        case SE_MORE:
+        case SE_PIPE:
+        case SE_BSLH:
+        case SE_LCBR:
+        case SE_RCBR:
+            if (record->event.pressed) {
+                uint16_t os_keycode = get_os_specific_keycode(keycode);
+                tap_code16(os_keycode);
+            }
+            return false;
+    }
+    return true;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Toggle the operating system in use
+    update_os_toggle(keycode, record);
+
     update_oneshot(
         &os_shft_state, KC_LSFT, OS_SHFT,
         keycode, record
@@ -145,12 +216,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         keycode, record
     );
 
+    if (!process_os_specific_keycode(keycode, record)) {
+        return false;
+    }
+
     return true;
 }
 
 #ifdef OLED_ENABLE
 
 void oled_render_layer_state(void) {
+    // Add OS mode indicator
+    oled_write_ln_P(current_os == MAC_MODE ? PSTR("MAC") : PSTR("WIN"), false);
+    oled_write_ln_P(PSTR("----------"), false);
+
     switch (get_highest_layer(layer_state)) {
         case _SVORAK:
             oled_write_ln_P(PSTR("SVORAK"), false);
