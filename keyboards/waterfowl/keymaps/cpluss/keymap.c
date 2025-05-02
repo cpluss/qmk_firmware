@@ -33,8 +33,8 @@
 #define KC_SE_ACUT KC_EQL            // ´
 #define KC_SE_MINS KC_SLASH          // -
 #define KC_SE_GRAV KC_PLUS           // `
-#define KC_SE_LESS KC_GRV      // <
-#define KC_SE_MORE S(KC_GRV)         // >
+#define KC_SE_LESS KC_NUBS           // <
+#define KC_SE_MORE S(KC_NUBS)        // >
 #define KC_SE_PLUS KC_MINS           // +
 #define KC_SE_ASTR S(KC_BSLS)        // *
 #define KC_SE_QUES S(KC_MINS)        // ?
@@ -73,8 +73,8 @@ enum custom_keycodes {
 
     // Support switching between operating systems
     TOG_OS,   // Toggle operating system
-    SE_LESS,  // <
-    SE_MORE,  // >
+//     SE_LESS,  // <
+//     SE_MORE,  // >
     SE_PIPE,  // |
     SE_BSLH,  // "\"
     SE_LCBR,  // {
@@ -83,8 +83,8 @@ enum custom_keycodes {
 
 // Define the OS-specific keycode mappings
 const os_keycode_map_t PROGMEM os_keycode_mappings[] = {
-    {SE_LESS, KC_GRV,       KC_NUBS},        // <
-    {SE_MORE, S(KC_GRV),    S(KC_NUBS)},     // >
+//    {SE_LESS, KC_GRV,       KC_NUBS},        // <
+//    {SE_MORE, S(KC_GRV),    S(KC_NUBS)},     // >
     {SE_PIPE, RALT(KC_7),   RALT(KC_NUBS)},  // |
     {SE_BSLH, S(RALT(KC_7)), RALT(KC_MINS)}, // \ ""
     {SE_LCBR, S(RALT(KC_8)), RALT(KC_7)},    // {
@@ -101,7 +101,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       KC_NO, KC_ESC, KC_LSFT, LA_FNUM, KC_MPLY, /*|*/  KC_MPLY, KC_ENT, KC_SPC, LA_SYM, KC_NO \
     ),
     [_SYMBOLS] = LAYOUT( \
-      SE_LCBR,    SE_RCBR,    KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, SE_LESS, SE_MORE, \
+      SE_LCBR,    SE_RCBR,    KC_SE_LBRC, KC_SE_RBRC, KC_SE_DLR,  /*|*/ KC_SE_PLUS, KC_SE_QUES, KC_SE_AMPR, KC_SE_LESS, KC_SE_MORE, \
       KC_SE_SEMI, KC_SE_SLSH, KC_SE_LPRN, KC_SE_RPRN, SE_PIPE,    /*|*/ KC_COMM,    KC_SE_CIRC, KC_SE_HASH, KC_SE_DQUO, KC_SE_TILD, \
       KC_SE_COL,  KC_SE_EQAL, KC_SE_AT,   KC_SE_EXCL, KC_SE_BSLH, /*|*/ KC_SE_PERC, KC_SE_GRAV, KC_SE_QUO,  KC_SE_ASTR, KC_SE_USC, \
       /*R*/                                    /*R*/        /*R*/                         /*R*/
@@ -148,7 +148,7 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
 
 // In your keyboard_init_user or similar initialization function
 void keyboard_post_init_user(void) {
-    init_os_management(os_keycode_mappings, 
+    init_os_management(os_keycode_mappings,
                       sizeof(os_keycode_mappings) / sizeof(os_keycode_map_t));
 }
 
